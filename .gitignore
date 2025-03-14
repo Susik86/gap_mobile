@@ -172,3 +172,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+logs/
+apps/
+__pycache__/
+reports/
+.idea/
+allure-report/
+allure_results/

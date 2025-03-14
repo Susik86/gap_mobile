@@ -1,0 +1,10 @@
+{
+    "ANDROID_DEVICE": "Galaxy A22",
+    "ANDROID_VERSION": "12",
+    "ANDROID_APP_PATH": "apps/android_qa.apk",
+    "ANDROID_UDID":"RZ8R71C78VW",
+    "IOS_DEVICE": "iPhone 14 Pro",
+    "IOS_VERSION": "16.4",
+    "IOS_APP_PATH": "apps/Genius-QA.app"
+}
+

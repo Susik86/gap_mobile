@@ -1,0 +1,8 @@
+{
+    "ANDROID_DEVICE": "Pixel_4",
+    "ANDROID_VERSION": "13",
+    "ANDROID_APP_PATH": "apps/android_dev.apk",
+    "IOS_DEVICE": "iPhone 14",
+    "IOS_VERSION": "16",
+    "IOS_APP_PATH": "apps/ios_dev.app"
+}
