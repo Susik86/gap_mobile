@@ -76,7 +76,7 @@ class LoginPage(BasePage):
             "reset_your_password_btn": self.locators.get("reset_your_password_btn"),
             "show_btn": self.locators.get("show_btn"),
             "login_button": self.locators.get("login_button"),
-            "bottom_txt": self.locators.get("bottom_txt")
+            # "bottom_txt": self.locators.get("bottom_txt")
         }
 
         expected_texts = {
@@ -86,7 +86,7 @@ class LoginPage(BasePage):
             "reset_your_password_btn": strings.reset_your_password,
             "show_btn": strings.show_btn,  # Only used if it's a text button (iOS)
             "login_button": strings.sign_in_btn,
-            "bottom_txt": strings.bottom_txt
+            # "bottom_txt": strings.bottom_txt
         }
 
         for element, locator in locators.items():

@@ -56,9 +56,14 @@ CONFIG = {
         "platformName": "iOS",
         "appium:app": os.getenv("IOS_APP_PATH"),
         "appium:deviceName": os.getenv("IOS_DEVICE", "iPhone 14 Pro"),
-        "appium:platformVersion": os.getenv("IOS_VERSION", "16.4"),  # ✅ Fixed comma issue
-        "appium:udid": os.getenv("IOS_UDID", None),  # ✅ Remove if using a simulator
-        "appium:autoAcceptAlerts": True,
+        "appium:platformVersion": os.getenv("IOS_VERSION", "16.4"),
+        "appium:udid": os.getenv("IOS_UDID", None),
+        "appium:automationName": "XCUITest",
+        "appium:useNewWDA": True,  # ✅ Ensure WDA restarts properly
+        "appium:wdaLaunchTimeout": 60000,  # ✅ Waits for WDA startup
+        "appium:wdaStartupRetries": 2,  # ✅ Retries if WDA fails
+        "appium:wdaLocalPort": 8100,  # ✅ Ensures WDA runs on port 8100
+        "appium:autoAcceptAlerts": True,  # ✅ Prevents automatic "Save Password"
     }
 }
 

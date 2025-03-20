@@ -163,7 +163,7 @@ class BasePage:
             raise AssertionError(f"❌ Assertion failed: Expected '{expected_text}' but element was missing or text did not match.")
 
 
-    def scroll_to_bottom(self, platform, button_locator=None, max_scrolls=15):
+    def scroll_to_bottom(self, platform, button_locator=None, max_scrolls=2):
         try:
             scroll_count = 0  # Counter to track number of scrolls
 
@@ -219,6 +219,57 @@ class BasePage:
         except Exception as e:
             self.logger.error(f"❌ Failed to scroll: {str(e)}")
             raise
+
+    # def scroll_to_bottom(self, platform, button_locator):
+    #     try:
+    #         self.logger.info("🔹 Checking if button is already visible...")
+    #
+    #         # ✅ Check if the button is visible BEFORE scrolling
+    #         try:
+    #             button = WebDriverWait(self.driver, 2).until(
+    #                 EC.visibility_of_element_located(button_locator)
+    #             )
+    #             if button.is_displayed():
+    #                 self.logger.info(f"✅ Button '{button_locator[1]}' is already visible. Clicking it now.")
+    #                 button.click()  # ✅ Click immediately if visible
+    #                 return  # ✅ Stop execution
+    #         except TimeoutException:
+    #             self.logger.info(f"🔄 '{button_locator[1]}' not visible yet, attempting a scroll...")
+    #
+    #         # 🔄 If not visible, perform ONE scroll
+    #         self.logger.info("🔄 Scrolling once to check if button appears...")
+    #         if platform.lower() == "ios":
+    #             self.driver.execute_script("mobile: swipe", {"direction": "up"})
+    #         elif platform.lower() == "android":
+    #             try:
+    #                 self.driver.execute_script("mobile: swipe", {"direction": "up"})
+    #             except Exception:
+    #                 self.driver.execute_script("mobile: scrollGesture", {
+    #                     "left": 100, "top": 100, "width": 800, "height": 1600,
+    #                     "direction": "down",
+    #                     "percent": 80
+    #                 })
+    #         else:
+    #             raise ValueError(f"❌ Unsupported platform: {platform}")
+    #
+    #         time.sleep(1)  # Small delay for UI to update
+    #
+    #         # ✅ Check if the button is visible again after scrolling
+    #         try:
+    #             button = WebDriverWait(self.driver, 3).until(
+    #                 EC.visibility_of_element_located(button_locator)
+    #             )
+    #             if button.is_displayed():
+    #                 self.logger.info(f"✅ Button '{button_locator[1]}' is now visible after scrolling. Clicking it now.")
+    #                 button.click()  # ✅ Click the button after one scroll
+    #                 return  # ✅ Stop execution
+    #         except TimeoutException:
+    #             self.logger.warning(f"⚠️ Button '{button_locator[1]}' still not visible after one scroll.")
+    #
+    #     except Exception as e:
+    #         self.logger.error(f"❌ Failed to scroll and find button: {str(e)}")
+    #         raise
+
 
 
     def swipe(self, direction, duration=800, repeat=1):

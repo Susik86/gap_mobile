@@ -1,6 +1,7 @@
 import time
 import pytest
 from other.logger import logger
+from pages.Genius_Meter.GM_create_team import GMCreateTeamPage
 from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
 from pages.Genius_Meter.GM_page import GMPage
@@ -8,7 +9,7 @@ from data.static.users import Users
 from data.static.strings.en import StringsEn
 
 @pytest.mark.usefixtures("driver")
-class TestLoginUITests:
+class TestGMCreateTeam:
     """ Test Class for login functionality """
 
     @pytest.fixture(autouse=True)
@@ -32,23 +33,26 @@ class TestLoginUITests:
         self.login_page = LoginPage(self.driver, self.platform)
         self.dashboard_page = DashboardPage(self.driver, self.platform)
         self.gm_page = GMPage(self.driver, self.platform)
+        self.create_GM_screen = GMCreateTeamPage(self.driver, self.platform)
         self.strings = StringsEn().LoginPage
         self.login_page.open_app()
-
+        self.logger.info(f"🔹 Running valid login test on: {self.platform}")
+        user = Users.get_random_valid_user()
+        email = user["email"]
+        password = user["password"]
+        self.logger.info(f"🔐 Logging in with: {email} / {password}")
+        self.login_page.login(email, password)
+        self.dashboard_page.assert_dashboard_tab_is_visible()
+        self.logger.info("✅ Login test completed successfully!")
 
     @pytest.mark.run
     def test_all_elements_have_appropriate_texts(self):
-        self.logger.info("🚀 Starting test: test_all_elements_have_appropriate_texts")
+        self.dashboard_page.click_gm_tab()
+        self.gm_page.scroll_GM_screen_to_bottom()
+        time.sleep(3)
+        self.gm_page.click_create_team_tab()
+        self.create_GM_screen.assert_create_team_screen_is_visible()
+        self.create_GM_screen.assert_create_team_screen_texts()
 
-        try:
-            self.logger.info("🔍 Verifying that all login page elements have appropriate texts...")
-            self.login_page.assert_login_texts()
-            self.logger.info("✅ All elements have the correct text!")
-        except AssertionError as e:
-            self.logger.error(f"❌ Test failed due to assertion error: {e}")
-            raise
-        except Exception as e:
-            self.logger.error(f"❌ Test failed due to unexpected error: {e}")
-            raise
-        finally:
-            self.logger.info("🛑 Test execution completed: test_all_elements_have_appropriate_texts")
+
+

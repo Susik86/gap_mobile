@@ -1,5 +1,5 @@
 import logging
-from data.locators.GM_locators import GMLocators
+from data.locators.Genius_Meter_locators.GM_locators import GMLocators
 
 from pages.base_page import BasePage
 from selenium.common.exceptions import TimeoutException, NoSuchElementException

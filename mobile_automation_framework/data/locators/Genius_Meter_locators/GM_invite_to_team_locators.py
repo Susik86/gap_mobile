@@ -3,14 +3,12 @@ from appium.webdriver.common.appiumby import AppiumBy
 class GMInviteToTeamTeamLocators:
     ANDROID = {
         "GM_PAGE": {
-            "screen_title":(AppiumBy.ID, "com.gapinternational.genius.qa:id/title"),
-            "back_button":(AppiumBy.ID, ""),
-            "digit_txt": (AppiumBy.ID, ""),
-            "share_invitation": (AppiumBy.ID, ""),
-            "add_members_btn":(AppiumBy.ID, ""),
-            "done_btn":(AppiumBy.ID, ""),
-
-
+            "screen_title":(AppiumBy.XPATH, "//*[@text='Invite to Team']"),
+            "back_button":(AppiumBy.XPATH, "//android.widget.ImageView[@resource-id='com.gapinternational.genius.qa:id/startActionImage']"),
+            "digit_txt": (AppiumBy.ID, "com.gapinternational.genius.qa:id/pcvPassCode"),
+            "share_invitation": (AppiumBy.ID, "com.gapinternational.genius.qa:id/shareButton"),
+            "add_members_btn":(AppiumBy.ID, "com.gapinternational.genius.qa:id/addMembersButton"),
+            "done_btn":(AppiumBy.ID, "com.gapinternational.genius.qa:id/doneButton"),
 
         }
     }

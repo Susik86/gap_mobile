@@ -3,13 +3,24 @@ from appium.webdriver.common.appiumby import AppiumBy
 class GMExploreTeamLocators:
     ANDROID = {
         "GM_PAGE": {
-            "screen_title":(AppiumBy.ID, ""),
-            "back_button":(AppiumBy.ID, ""),
-            "legend_icon": (AppiumBy.ID, ""),
-            "team_edit_btn": (AppiumBy.XPATH, ""),
-            "project_edit_btn": (AppiumBy.XPATH, ""),
-            "outcome_edit_btn": (AppiumBy.XPATH, ""),
+            "screen_title":(AppiumBy.XPATH, "//*[@text='Explore Team']"),
+            "back_button":(AppiumBy.XPATH, "//android.widget.ImageView[@resource-id='com.gapinternational.genius.qa:id/startActionImage']"),
+            "legend_icon": (AppiumBy.ID, "com.gapinternational.genius.qa:id/secondEndActionImageView"),
+            "team_edit_btn": (AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout/android.view.ViewGroup[2]/android.widget.ScrollView/android.view.ViewGroup/android.widget.FrameLayout[2]/android.view.ViewGroup/android.view.ViewGroup/android.widget.TextView[1]"),
+            "project_edit_btn": (AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout/android.view.ViewGroup[2]/android.widget.ScrollView/android.view.ViewGroup/android.widget.FrameLayout[2]/android.view.ViewGroup/android.view.ViewGroup/android.widget.TextView[2]"),
+            "outcome_edit_btn": (AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout/android.view.ViewGroup[2]/android.widget.ScrollView/android.view.ViewGroup/android.widget.FrameLayout[2]/android.view.ViewGroup/android.view.ViewGroup/android.widget.TextView[3]"),
+            "info_btn":(AppiumBy.ID, "com.gapinternational.genius.qa:id/infoButton"),
 
+            "add_member_btn":(AppiumBy.ID, "com.gapinternational.genius.qa:id/addMembersButton"),
+            "take_pulse_btn":(AppiumBy.XPATH, "//android.widget.Button[@text='Take Genius Pulse']"),
+            "launch_pulse_btn":(AppiumBy.XPATH, "//android.widget.Button[@text='Launch Genius Pulse']"),
+            "my_scores_tab":(AppiumBy.XPATH, "//android.widget.TextView[@text='My Scores']"),
+            "team_scores_tab":(AppiumBy.XPATH, "//android.widget.TextView[@text='Team Scores']"),
+            "no_data_txt":(AppiumBy.XPATH, ""),#TODO add locator
+            "team_members_txt":(AppiumBy.ID, ""),
+            "view_all_btn":(AppiumBy.ID, ''),
+            "leave_team_btn":(AppiumBy.ID, ''),
+            "delete_team_btn":(AppiumBy.ID, ''),
         }
     }
 
@@ -23,6 +34,7 @@ class GMExploreTeamLocators:
             "outcome_edit_btn": (AppiumBy.XPATH, "(//XCUIElementTypeButton[@name='D Edit'])[3]"),
             "info_btn":(AppiumBy.ACCESSIBILITY_ID, "infoIcon"),
             "add_member_btn":(AppiumBy.ACCESSIBILITY_ID, "add member"),
+            "take_pulse_btn":(AppiumBy.XPATH, '//XCUIElementTypeStaticText[@name="Take Genius Pulse"]'),
             "launch_pulse_btn":(AppiumBy.XPATH, '//XCUIElementTypeStaticText[@name="Launch Genius Pulse"]'),
             "my_scores_tab":(AppiumBy.ACCESSIBILITY_ID, 'My Scores'),
             "team_scores_tab":(AppiumBy.ACCESSIBILITY_ID, 'Team Scores'),

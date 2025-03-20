@@ -5,7 +5,7 @@ from data.locators.login_locators import LoginLocators
 from other.logger import logger
 from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
-from pages.gm_page import GMPage
+from pages.Genius_Meter.GM_page import GMPage
 from data.static.users import Users
 from data.static.strings.en import StringsEn
 
@@ -57,8 +57,8 @@ class TestLoginValidationTests:
 
     @pytest.mark.run
     def test_leaving_email_and_password_empty_results_in_required_field_error(self):
-        required_email_error = self.locators.get("email_field")
-        required_password_error = self.locators.get("password_field")
+        required_email_error = self.locators.get("email_error")
+        required_password_error = self.locators.get("password_error")
 
         self.logger.info(f"🔹 Running invalid login test on: {self.platform}")
         self.login_page.click_on_signin_btn()
