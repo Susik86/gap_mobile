@@ -19,9 +19,9 @@ class GMCreateTeamLocators:
             "screen_title":(AppiumBy.IOS_PREDICATE, 'label == "Create a Team"'),
             "back_button":(AppiumBy.ACCESSIBILITY_ID, "Genius Meter"),
             # "legend_icon":(AppiumBy.IOS_PREDICATE, '"label == "?" AND name == "?" AND value == "?"'),
-            "team_name_field": (AppiumBy.ACCESSIBILITY_ID, "Enter team name…"),
-            "project_name_field": (AppiumBy.ACCESSIBILITY_ID, "Enter project name…"),
-            "outcome_field": (AppiumBy.ACCESSIBILITY_ID, "Enter outcome…"),
+            "team_name_field": (AppiumBy.ACCESSIBILITY_ID, "Team Name"),
+            "project_name_field": (AppiumBy.ACCESSIBILITY_ID, "Project Name"),
+            "outcome_field": (AppiumBy.XPATH, '//XCUIElementTypeTextView[@name="Outcome"]'),
             "submit_btn": (AppiumBy.XPATH, '//XCUIElementTypeButton[@name="Submit"]'),
             "cancel_btn": (AppiumBy.XPATH, '//XCUIElementTypeButton[@name="Cancel"]')
         }

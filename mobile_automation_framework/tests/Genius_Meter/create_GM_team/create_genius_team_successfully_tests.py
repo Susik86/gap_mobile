@@ -1,5 +1,7 @@
 import time
 import pytest
+
+from data.static.GM_data import GM_data
 from other.logger import logger
 from pages.Genius_Meter.GM_create_team import GMCreateTeamPage
 from pages.login_page import LoginPage
@@ -9,8 +11,7 @@ from data.static.users import Users
 from data.static.strings.en import StringsEn
 
 @pytest.mark.usefixtures("driver")
-class TestGMCreateTeam:
-    """ Test Class for login functionality """
+class TestCreateGMTeamSuccessfully:
 
     @pytest.fixture(autouse=True)
     def setup(self, driver):
@@ -46,13 +47,22 @@ class TestGMCreateTeam:
         self.logger.info("✅ Login test completed successfully!")
 
     @pytest.mark.run
-    def test_all_elements_have_appropriate_texts(self):
+    def test_create_GM_team_successfully(self):
         self.dashboard_page.click_gm_tab()
         self.gm_page.scroll_GM_screen_to_bottom()
         time.sleep(3)
         self.gm_page.click_create_team_tab()
         self.create_GM_screen.assert_create_team_screen_is_visible()
-        self.create_GM_screen.assert_create_team_screen_texts()
+        time.sleep(3)
+
+        # ✅ Generate test data here once
+        data = GM_data.get_random_create_GM_screen_data()
+
+        # ✅ Pass it to both fill and assert
+        self.create_GM_screen.fill_create_GM_team_fields(data)
+        self.create_GM_screen.assert_create_GM_fields_filled_correctly(data)
+        self.create_GM_screen.click_on_submit_btn()
+
 
 
 

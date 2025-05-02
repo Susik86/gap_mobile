@@ -163,113 +163,69 @@ class BasePage:
             raise AssertionError(f"❌ Assertion failed: Expected '{expected_text}' but element was missing or text did not match.")
 
 
-    def scroll_to_bottom(self, platform, button_locator=None, max_scrolls=2):
+    def scroll_until_visible(self, locator_name, platform, locator_map, max_scrolls=5):
         try:
-            scroll_count = 0  # Counter to track number of scrolls
+            if locator_name not in locator_map:
+                raise ValueError(f"❌ Locator '{locator_name}' not found in locator map.")
 
+            locator = locator_map[locator_name]
+
+            # Step 1: Check if the element is already visible
+            try:
+                element = WebDriverWait(self.driver, 2).until(
+                    EC.visibility_of_element_located(locator)
+                )
+                if element.is_displayed():
+                    self.logger.info(f"✅ Element '{locator_name}' is already visible. No scrolling needed.")
+                    return element
+            except TimeoutException:
+                self.logger.info(f"🔍 Element '{locator_name}' not initially visible. Starting scroll...")
+
+            # Step 2: Start scrolling until it's visible or max_scrolls reached
+            scroll_count = 0
             while scroll_count < max_scrolls:
-                if button_locator:
-                    try:
-                        button = WebDriverWait(self.driver, 2).until(
-                            EC.visibility_of_element_located(button_locator)
-                        )
-                        if button.is_displayed():
-                            self.logger.info(f"✅ Button '{button_locator}' is now visible. Stopping scroll.")
-                            # button.click()  # Ensure the button is clicked once found
-                            break  # ✅ Stop scrolling when the button is found
-                    except TimeoutException:
-                        self.logger.info(f"🔄 '{button_locator}' not found yet, scrolling down...")
-
-                # Perform scrolling based on platform
+                # Perform platform-specific scroll
                 if platform.lower() == "ios":
-                    self.logger.info("🔹 Scrolling down on iOS...")
+                    self.logger.info("📱 iOS: Scrolling up")
                     self.driver.execute_script("mobile: swipe", {"direction": "up"})
-
                 elif platform.lower() == "android":
-                    self.logger.info("🔹 Scrolling down on Android...")
-
-                    # Try swiping first
+                    self.logger.info("🤖 Android: Scrolling up")
                     try:
                         self.driver.execute_script("mobile: swipe", {"direction": "up"})
                     except Exception:
-                        self.logger.info("⚠️ Swipe failed, trying scrollGesture...")
-
-                        # If swipe fails, fall back to scrollGesture with increased percent
+                        self.logger.info("⚠️ Swipe failed, falling back to scrollGesture")
                         try:
                             self.driver.execute_script("mobile: scrollGesture", {
                                 "left": 100, "top": 100, "width": 800, "height": 1600,
-                                "direction": "down",
-                                "percent": 80  # Increased percent for better visibility
+                                "direction": "down",  # Down == scrolls up visually
+                                "percent": 80
                             })
                         except Exception as e:
-                            self.logger.error(f"❌ Scrolling failed: {e}")
-
+                            self.logger.error(f"❌ scrollGesture failed: {e}")
                 else:
                     raise ValueError(f"❌ Unsupported platform: {platform}")
 
-                time.sleep(1)  # Small delay to allow UI updates
-                scroll_count += 1  # Increment scroll count
+                # Small delay for UI update
+                time.sleep(1)
+                scroll_count += 1
 
-            if scroll_count >= max_scrolls:
-                self.logger.warning(f"⚠️ Max scroll attempts ({max_scrolls}) reached. Button might not be present.")
-                print(self.driver.page_source)  # Dump page source for debugging
+                # Re-check visibility after each scroll
+                try:
+                    element = WebDriverWait(self.driver, 2).until(
+                        EC.visibility_of_element_located(locator)
+                    )
+                    if element.is_displayed():
+                        self.logger.info(f"✅ Found element '{locator_name}' after {scroll_count} scroll(s).")
+                        return element
+                except TimeoutException:
+                    self.logger.info(f"🔄 Still not visible after {scroll_count} scroll(s)...")
 
-            self.logger.info("✅ Scroll completed!")
+            self.logger.warning(f"⚠️ Max scrolls reached. Element '{locator_name}' not found.")
+            return None
 
         except Exception as e:
-            self.logger.error(f"❌ Failed to scroll: {str(e)}")
+            self.logger.error(f"❌ Exception in scroll_until_visible: {e}")
             raise
-
-    # def scroll_to_bottom(self, platform, button_locator):
-    #     try:
-    #         self.logger.info("🔹 Checking if button is already visible...")
-    #
-    #         # ✅ Check if the button is visible BEFORE scrolling
-    #         try:
-    #             button = WebDriverWait(self.driver, 2).until(
-    #                 EC.visibility_of_element_located(button_locator)
-    #             )
-    #             if button.is_displayed():
-    #                 self.logger.info(f"✅ Button '{button_locator[1]}' is already visible. Clicking it now.")
-    #                 button.click()  # ✅ Click immediately if visible
-    #                 return  # ✅ Stop execution
-    #         except TimeoutException:
-    #             self.logger.info(f"🔄 '{button_locator[1]}' not visible yet, attempting a scroll...")
-    #
-    #         # 🔄 If not visible, perform ONE scroll
-    #         self.logger.info("🔄 Scrolling once to check if button appears...")
-    #         if platform.lower() == "ios":
-    #             self.driver.execute_script("mobile: swipe", {"direction": "up"})
-    #         elif platform.lower() == "android":
-    #             try:
-    #                 self.driver.execute_script("mobile: swipe", {"direction": "up"})
-    #             except Exception:
-    #                 self.driver.execute_script("mobile: scrollGesture", {
-    #                     "left": 100, "top": 100, "width": 800, "height": 1600,
-    #                     "direction": "down",
-    #                     "percent": 80
-    #                 })
-    #         else:
-    #             raise ValueError(f"❌ Unsupported platform: {platform}")
-    #
-    #         time.sleep(1)  # Small delay for UI to update
-    #
-    #         # ✅ Check if the button is visible again after scrolling
-    #         try:
-    #             button = WebDriverWait(self.driver, 3).until(
-    #                 EC.visibility_of_element_located(button_locator)
-    #             )
-    #             if button.is_displayed():
-    #                 self.logger.info(f"✅ Button '{button_locator[1]}' is now visible after scrolling. Clicking it now.")
-    #                 button.click()  # ✅ Click the button after one scroll
-    #                 return  # ✅ Stop execution
-    #         except TimeoutException:
-    #             self.logger.warning(f"⚠️ Button '{button_locator[1]}' still not visible after one scroll.")
-    #
-    #     except Exception as e:
-    #         self.logger.error(f"❌ Failed to scroll and find button: {str(e)}")
-    #         raise
-
 
 
     def swipe(self, direction, duration=800, repeat=1):
@@ -329,6 +285,9 @@ class BasePage:
             raise AssertionError(f"❌ Element {locator} is not visible!")
 
 
+    def get_element_value(self, locator):
+        element = self.driver.find_element(*locator)
+        return element.text or element.get_attribute("value")
 
 
 

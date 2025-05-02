@@ -1,6 +1,9 @@
 import logging
+import time
+
 from data.locators.Genius_Meter_locators import GM_create_team_locators
 from data.locators.Genius_Meter_locators.GM_create_team_locators import GMCreateTeamLocators
+from data.static.GM_data import GM_data
 from data.static.strings.en import StringsEn
 
 from pages.base_page import BasePage
@@ -88,3 +91,54 @@ class GMCreateTeamPage(BasePage):
                     self.logger.warning(f"⚠️ No expected text found for '{element}', skipping assertion.")
 
         self.logger.info("✅ All create team screen elements (text + image) asserted successfully!")
+
+
+    def fill_create_GM_team_fields(self, test_data):
+        self.logger.info("📝 Filling out GM team creation fields...")
+
+        team_field = self.locators.get("team_name_field")
+        project_field = self.locators.get("project_name_field")
+        outcome_field = self.locators.get("outcome_field")  # ✅ Fixed key name
+
+        self.logger.info(f"🔹 Entering team name: {test_data['team_name_field']}")
+        self.send_keys(team_field, test_data["team_name_field"])
+
+        self.logger.info(f"🔹 Entering project name: {test_data['project_name_field']}")
+        self.send_keys(project_field, test_data["project_name_field"])
+
+        time.sleep(3)  # Optional: wait if the field loads after delay
+
+        self.logger.info(f"🔹 Entering outcome name: {test_data['outcome_field']}")
+        self.send_keys(outcome_field, test_data["outcome_field"])
+
+        self.logger.info("✅ GM team form filled successfully.")
+
+
+    def assert_create_GM_fields_filled_correctly(self, expected_data):
+        self.logger.info("🔍 Asserting values in GM form fields...")
+
+        # Get locators
+        team_name_locator = self.locators.get("team_name_field")
+        project_name_locator = self.locators.get("project_name_field")
+        outcome_name_locator = self.locators.get("outcome_field")
+
+        # Get actual values from fields
+        actual_team_name = self.get_element_value(team_name_locator)
+        actual_project_name = self.get_element_value(project_name_locator)
+        actual_outcome_name = self.get_element_value(outcome_name_locator)
+
+        # Assertions
+        assert actual_team_name == expected_data["team_name_field"], \
+            f"❌ Team name mismatch: Expected '{expected_data['team_name_field']}', got '{actual_team_name}'"
+
+        assert actual_project_name == expected_data["project_name_field"], \
+            f"❌ Project name mismatch: Expected '{expected_data['project_name_field']}', got '{actual_project_name}'"
+
+        assert actual_outcome_name == expected_data["outcome_field"], \
+            f"❌ Outcome name mismatch: Expected '{expected_data['outcome_field']}', got '{actual_outcome_name}'"
+
+        self.logger.info("✅ All GM form fields are filled and verified correctly.")
+
+
+    def click_on_submit_btn(self):
+        self.click(self.locators.get("submit_btn"))

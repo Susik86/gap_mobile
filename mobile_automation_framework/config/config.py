@@ -4,71 +4,94 @@ import json
 from dotenv import load_dotenv
 
 # --------------------------------------------
-# ✅ Setup Logging (Before any logging statements)
+# ✅ Setup Logging
 # --------------------------------------------
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # --------------------------------------------
-# ✅ Load Environment Variables (.env file)
+# ✅ Resolve base directory safely
 # --------------------------------------------
-env = os.getenv("ENV", "qa")  # Default to "qa"
-dotenv_path = os.path.join(os.path.dirname(__file__), "..", "utils", ".env")
+base_dir = os.getcwd()
+
+# --------------------------------------------
+# ✅ Load .env File
+# --------------------------------------------
+dotenv_path = os.path.join(base_dir, ".env")
+env = os.getenv("ENV", "qa")  # Default to qa if not set
 
 if os.path.exists(dotenv_path):
     logging.info(f"🔍 Loading .env from: {dotenv_path}")
     load_dotenv(dotenv_path=dotenv_path)
 else:
-    logging.warning(f"⚠️ No .env file found at {dotenv_path}. Environment variables may not be loaded.")
-
-# ✅ Debugging: Print loaded environment variables
-logging.info(f"🔍 Current Environment: {env}")
-logging.info(f"🔍 ANDROID_APP_PATH: {os.getenv('ANDROID_APP_PATH')}")
-logging.info(f"🔍 IOS_APP_PATH: {os.getenv('IOS_APP_PATH')}")
+    logging.warning(f"⚠️ No .env file found at {dotenv_path}")
 
 # --------------------------------------------
-# ✅ Load Environment-Specific JSON Config
+# ✅ Load env-specific JSON Config (e.g., qa.json)
 # --------------------------------------------
-config_file = os.path.join(os.path.dirname(__file__), f"{env}.json")  # ✅ Fix path
-
+config_file = os.path.join(base_dir, "config", f"{env}.json")
 if not os.path.exists(config_file):
-    logging.error(f"❌ Config file not found: {config_file}. Please check the environment setup.")
+    logging.error(f"❌ Config file not found: {config_file}")
     raise FileNotFoundError(f"Missing config file: {config_file}")
 
 with open(config_file, "r") as f:
     ENV_CONFIG = json.load(f)
 
-logging.info(f"✅ Successfully loaded configuration from {config_file}")
+logging.info(f"✅ Loaded config: {config_file}")
 
 # --------------------------------------------
-# ✅ Final Appium CONFIG Dictionary
+# ✅ Helper to get config value
 # --------------------------------------------
+def get_config_value(key: str, default: str = ""):
+    return os.getenv(key) or ENV_CONFIG.get(key) or default
+
+# --------------------------------------------
+# ✅ Final CONFIG Dictionary (with dynamic BStack support)
+# --------------------------------------------
+
+is_browserstack = "browserstack" in get_config_value("APPIUM_SERVER_URL").lower()
+
 CONFIG = {
     "android": {
         "platformName": "Android",
-        "appium:app": os.getenv("ANDROID_APP_PATH"),  # ✅ Use os.getenv()
-        "appium:deviceName": os.getenv("ANDROID_DEVICE", "Unknown Device"),
-        "appium:platformVersion": os.getenv("ANDROID_VERSION", "Unknown Version"),
-        "appium:udid": os.getenv("ANDROID_UDID", ""),  # ✅ Fix for real devices
+        "appium:app": get_config_value("ANDROID_APP_PATH"),
+        "appium:deviceName": get_config_value("ANDROID_DEVICE", "Samsung Galaxy S22"),
+        "appium:platformVersion": get_config_value("ANDROID_VERSION", "12"),
         "appium:automationName": "UiAutomator2",
-        "appium:autoGrantPermissions": True,
+        "project": "Genius Meter App",
+        "build": "Regression Build 1",
+        "name": "Android Test",
+        "server_url": get_config_value("APPIUM_SERVER_URL")
     },
     "ios": {
         "platformName": "iOS",
-        "appium:app": os.getenv("IOS_APP_PATH"),
-        "appium:deviceName": os.getenv("IOS_DEVICE", "iPhone 14 Pro"),
-        "appium:platformVersion": os.getenv("IOS_VERSION", "16.4"),
-        "appium:udid": os.getenv("IOS_UDID", None),
+        "appium:app": get_config_value("IOS_APP_PATH"),
+        "appium:deviceName": get_config_value("IOS_DEVICE", "iPhone 14 Pro"),
+        "appium:platformVersion": get_config_value("IOS_VERSION", "16"),
         "appium:automationName": "XCUITest",
-        "appium:useNewWDA": True,  # ✅ Ensure WDA restarts properly
-        "appium:wdaLaunchTimeout": 60000,  # ✅ Waits for WDA startup
-        "appium:wdaStartupRetries": 2,  # ✅ Retries if WDA fails
-        "appium:wdaLocalPort": 8100,  # ✅ Ensures WDA runs on port 8100
-        "appium:autoAcceptAlerts": True,  # ✅ Prevents automatic "Save Password"
+        "appium:useNewWDA": False,
+        "appium:autoAcceptAlerts": True,
+        "appium:wdaLocalPort": 8100,
+        "appium:wdaStartupRetries": 2,
+        "appium:wdaLaunchTimeout": 60000,
+        "server_url": get_config_value("APPIUM_SERVER_URL")
     }
 }
 
+# ✅ Conditionally add bstack:options only if using BrowserStack
+if is_browserstack:
+    CONFIG["android"]["bstack:options"] = {
+        "userName": get_config_value("BROWSERSTACK_USERNAME"),
+        "accessKey": get_config_value("BROWSERSTACK_ACCESS_KEY")
+    }
+    CONFIG["ios"]["bstack:options"] = {
+        "userName": get_config_value("BROWSERSTACK_USERNAME"),
+        "accessKey": get_config_value("BROWSERSTACK_ACCESS_KEY")
+    }
 
-# ✅ Debugging Output
-logging.info(f"✅ CONFIG Loaded Successfully!")
-logging.info(f"🔍 Selected capabilities for Android: {CONFIG.get('android')}")
-logging.info(f"🔍 Selected capabilities for iOS: {CONFIG.get('ios')}")
+# ✅ Debug logs
+logging.info("✅ Final CONFIG loaded successfully!")
+logging.info(f"📱 ANDROID Config: {CONFIG.get('android')}")
+logging.info(f"📱 IOS Config: {CONFIG.get('ios')}")
+logging.info(f"📦 Android App Path: {get_config_value('ANDROID_APP_PATH')}")
+logging.info(f"📦 iOS App Path: {get_config_value('IOS_APP_PATH')}")
+logging.info(f"📡 Appium Server URL: {get_config_value('APPIUM_SERVER_URL')}")

@@ -2,7 +2,7 @@ from appium.webdriver.common.appiumby import AppiumBy
 
 class GMInviteToTeamTeamLocators:
     ANDROID = {
-        "GM_PAGE": {
+        "GM_INVITE_TPAGE": {
             "screen_title":(AppiumBy.XPATH, "//*[@text='Invite to Team']"),
             "back_button":(AppiumBy.XPATH, "//android.widget.ImageView[@resource-id='com.gapinternational.genius.qa:id/startActionImage']"),
             "digit_txt": (AppiumBy.ID, "com.gapinternational.genius.qa:id/pcvPassCode"),

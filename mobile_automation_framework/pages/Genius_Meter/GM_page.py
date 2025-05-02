@@ -19,9 +19,10 @@ class GMPage(BasePage):
 
     def scroll_GM_screen_to_bottom(self):
         self.logger.info("🔹 Scrolling to the bottom of the GM page...")
-        button_locator = self.locators.get("create_team_btn")
 
-        self.scroll_to_bottom(self.platform, button_locator=button_locator)
+        locators = GMLocators.get_locators("GM_PAGE", self.platform)
+        self.scroll_until_visible("create_team_btn", self.platform, locators)
+
         self.logger.info("✅ Reached the bottom of the GM page.")
 
 
