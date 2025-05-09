@@ -26,7 +26,8 @@ class PushHelper:
     def get_pushes(self):
         # Simulated push list for now
         return [
-            "You are invited to join a team. Tap now to join.",
+            # "You are invited to join a team. Tap now to join.",
+            "New Genius Pulse launched.Tap now to take the Pulse."
             "Daily check-in reminder"
         ]
 

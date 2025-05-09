@@ -6,9 +6,9 @@ fake = Faker()
 class Users:
     # 🔐 Valid test users for multi-device tests
     VALID_USERS = [
-        # {"email": "NewLGOBCO1@mailinator.com", "password": "qwe123QWE!@#"}, # User A (iOS),
+
         {"email": "andranik.hayrapetyan@volo.global", "password": "qwe123QWE!@#"}, # User A (iOS)
-        # {"email": "susanna.karapetyan@volo.global", "password": "qwe123QWE!@#"}  # User B (Android)
+        {"email": "karlen.aleksanyan@volo.global", "password": "qwe123QWE!@#"}  # User B (Android)
 
     ]
 

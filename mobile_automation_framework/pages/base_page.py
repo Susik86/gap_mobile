@@ -2,7 +2,7 @@ import os
 import allure
 import logging
 
-
+from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -348,3 +348,54 @@ class BasePage:
 
 
 
+    def click_by_visible_text(self, visible_text: str, timeout: int = 10):
+        """
+        Clicks an element by its visible text without needing predefined locator.
+        Supports both Android and iOS platforms.
+        """
+        self.logger.info(f"🔍 Attempting to click element with text: '{visible_text}'")
+
+        platform = self.driver.capabilities.get("platformName", "").lower()
+
+        if platform == "android":
+            locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{visible_text}")')
+        elif platform == "ios":
+            locator = (AppiumBy.IOS_PREDICATE, f'label == "{visible_text}" OR name == "{visible_text}"')
+        else:
+            raise ValueError(f"❌ Unsupported platform: {platform}")
+
+        try:
+            element = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable(locator)
+            )
+            element.click()
+            self.logger.info(f"✅ Clicked on element with text: '{visible_text}'")
+        except (TimeoutException, NoSuchElementException) as e:
+            self.logger.error(f"❌ Failed to click element with text '{visible_text}': {e}")
+            raise
+
+
+    def click_alert_ok(self, timeout=10):
+        """
+        Clicks the 'OK' button on a system or app alert.
+        Works for both iOS and Android native alerts.
+        """
+        self.logger.info("🔍 Looking for 'OK' button in alert...")
+
+        platform = self.driver.capabilities.get("platformName", "").lower()
+
+        if platform == "ios":
+            ok_locator = (AppiumBy.IOS_PREDICATE, 'label == "OK" AND type == "XCUIElementTypeButton"')
+        elif platform == "android":
+            ok_locator = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("OK")')
+        else:
+            raise ValueError(f"❌ Unsupported platform: {platform}")
+
+        try:
+            element = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable(ok_locator)
+            )
+            element.click()
+            self.logger.info("✅ 'OK' button clicked.")
+        except TimeoutException:
+            self.logger.warning("⚠️ 'OK' button not found — alert may not have appeared.")
