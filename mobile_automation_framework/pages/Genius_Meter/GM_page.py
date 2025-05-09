@@ -1,4 +1,7 @@
 import logging
+
+from appium.webdriver.common.appiumby import AppiumBy
+
 from data.locators.Genius_Meter_locators.GM_locators import GMLocators
 
 from pages.base_page import BasePage
@@ -24,6 +27,29 @@ class GMPage(BasePage):
         self.scroll_until_visible("create_team_btn", self.platform, locators)
 
         self.logger.info("✅ Reached the bottom of the GM page.")
+
+    # def scroll_GM_screen_to_bottom(self):
+    #     self.logger.info("🔹 Scrolling to the bottom of the GM page...")
+    #
+    #     by, value = self.locators["create_team_btn"]
+    #
+    #     if self.platform == "android":
+    #         self.logger.info(f"🔹 Android scroll using UiScrollable for element with id: {value}")
+    #         try:
+    #             self.driver.find_element(
+    #                 AppiumBy.ANDROID_UIAUTOMATOR,
+    #                 f'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().resourceId("{value}"))'
+    #             )
+    #         except Exception as e:
+    #             self.logger.error(f"❌ Failed to scroll on Android: {e}")
+    #             raise AssertionError("❌ Scroll to 'create_team_btn' failed on Android.")
+    #
+    #     elif self.platform == "ios":
+    #         self.logger.info("🔹 iOS scroll logic being used...")
+    #         # Use your existing iOS scroll method
+    #         self.scroll_until_visible("create_team_btn", self.platform, self.locators)
+    #
+    #     self.logger.info("✅ Reached the bottom of the GM page.")
 
 
     def click_create_team_tab(self):

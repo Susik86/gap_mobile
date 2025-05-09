@@ -1,4 +1,7 @@
 import logging
+
+from selenium.webdriver.support.wait import WebDriverWait
+
 from data.locators.Genius_Meter_locators.GM_invite_to_team_locators import GMInviteToTeamTeamLocators
 
 from pages.base_page import BasePage
@@ -38,19 +41,42 @@ class GMInviteToTeamPage(BasePage):
 
             raise AssertionError("❌ Done button was not clickable.")
 
-
-    def assert_invite_to_team_screen_is_visible(self):
-        self.logger.info("🔍 Asserting 'Invite to Team' screen is visible...")
-
-        # Define the locator (you can also store this in your locators dictionary)
-        screen_title_locator = self.locators.get("done_btn")
-
+    def click_add_members_button(self):
+        """Clicks on the Add members button."""
         try:
-            element = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located(title_locator)
-            )
-            assert element.is_displayed(), "❌ 'Invite to Team' title is not visible!"
-            self.logger.info("✅ 'Invite to Team' screen is visible.")
-        except Exception as e:
-            self.logger.error(f"❌ 'Invite to Team' screen not visible: {e}")
-            raise AssertionError(f"'Invite to Team' screen not visible: {e}")
+            add_members_btn = self.locators.get("add_members_btn")
+            if not add_members_btn:
+                self.logger.error("❌ 'add_members_btn' locator is missing.")
+                raise ValueError("❌ 'add_members_btn' locator is missing.")
+
+            self.logger.info("🔹 Clicking Create add_members_btn...")
+            self.click(add_members_btn)  # ✅ Use BasePage.click() method
+            self.logger.info("✅ Add Members button is clicked successfully!")
+
+        except (TimeoutException, NoSuchElementException) as e:
+            self.logger.error(f"❌ Add Members button could not be clicked: {str(e)}")
+
+            # 📸 Capture a screenshot for debugging
+            screenshot_path = "logs/add_members_btn_not_clicked.png"
+            self.driver.save_screenshot(screenshot_path)
+            self.logger.info(f"📸 Screenshot saved: {screenshot_path}")
+
+            raise AssertionError("❌ Done button was not clickable.")
+
+
+
+    # def assert_invite_to_team_screen_is_visible(self):
+    #     self.logger.info("🔍 Asserting 'Invite to Team' screen is visible...")
+    #
+    #     # Define the locator (you can also store this in your locators dictionary)
+    #     screen_title_locator = self.locators.get("done_btn")
+    #
+    #     try:
+    #         element = WebDriverWait(self.driver, 10).until(
+    #             EC.visibility_of_element_located(title_locator)
+    #         )
+    #         assert element.is_displayed(), "❌ 'Invite to Team' title is not visible!"
+    #         self.logger.info("✅ 'Invite to Team' screen is visible.")
+    #     except Exception as e:
+    #         self.logger.error(f"❌ 'Invite to Team' screen not visible: {e}")
+    #         raise AssertionError(f"'Invite to Team' screen not visible: {e}")

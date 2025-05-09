@@ -55,6 +55,7 @@ CONFIG = {
         "platformName": "Android",
         "appium:app": get_config_value("ANDROID_APP_PATH"),
         "appium:deviceName": get_config_value("ANDROID_DEVICE", "Samsung Galaxy S22"),
+        "appium:udid": get_config_value("ANDROID_UDID"),
         "appium:platformVersion": get_config_value("ANDROID_VERSION", "12"),
         "appium:automationName": "UiAutomator2",
         "project": "Genius Meter App",
@@ -68,13 +69,15 @@ CONFIG = {
         "appium:deviceName": get_config_value("IOS_DEVICE", "iPhone 14 Pro"),
         "appium:platformVersion": get_config_value("IOS_VERSION", "16"),
         "appium:automationName": "XCUITest",
-        "appium:useNewWDA": False,
+        "appium:useNewWDA": True,
         "appium:autoAcceptAlerts": True,
+        "appium:autoDismissAlerts": True,
         "appium:wdaLocalPort": 8100,
         "appium:wdaStartupRetries": 2,
         "appium:wdaLaunchTimeout": 60000,
         "server_url": get_config_value("APPIUM_SERVER_URL")
-    }
+    },
+
 }
 
 # ✅ Conditionally add bstack:options only if using BrowserStack

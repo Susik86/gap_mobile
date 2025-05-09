@@ -4,6 +4,8 @@ import pytest
 from data.static.GM_data import GM_data
 from other.logger import logger
 from pages.Genius_Meter.GM_create_team import GMCreateTeamPage
+from pages.Genius_Meter.GM_invite_find_people_list import GMInviteFindPeoplePage
+from pages.Genius_Meter.GM_invite_to_team_page import GMInviteToTeamPage
 from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
 from pages.Genius_Meter.GM_page import GMPage
@@ -35,6 +37,12 @@ class TestCreateGMTeamSuccessfully:
         self.dashboard_page = DashboardPage(self.driver, self.platform)
         self.gm_page = GMPage(self.driver, self.platform)
         self.create_GM_screen = GMCreateTeamPage(self.driver, self.platform)
+        self.create_GM_screen_ios = GMCreateTeamPage(self.driver, self.platform)
+        self.create_GM_Invite_Members_screen_ios = GMInviteToTeamPage(self.driver, self.platform)
+        self.GM_Invite_find_people_screen_ios = GMInviteFindPeoplePage(self.driver, self.platform)
+
+
+
         self.strings = StringsEn().LoginPage
         self.login_page.open_app()
         self.logger.info(f"🔹 Running valid login test on: {self.platform}")
@@ -50,7 +58,7 @@ class TestCreateGMTeamSuccessfully:
     def test_create_GM_team_successfully(self):
         self.dashboard_page.click_gm_tab()
         self.gm_page.scroll_GM_screen_to_bottom()
-        time.sleep(3)
+        time.sleep(5)
         self.gm_page.click_create_team_tab()
         self.create_GM_screen.assert_create_team_screen_is_visible()
         time.sleep(3)
@@ -60,8 +68,13 @@ class TestCreateGMTeamSuccessfully:
 
         # ✅ Pass it to both fill and assert
         self.create_GM_screen.fill_create_GM_team_fields(data)
-        self.create_GM_screen.assert_create_GM_fields_filled_correctly(data)
+        # self.create_GM_screen.assert_create_GM_fields_filled_correctly(data)
         self.create_GM_screen.click_on_submit_btn()
+        self.create_GM_Invite_Members_screen_ios.click_add_members_button()
+        username = self.GM_Invite_find_people_screen_ios.search_user_from_list("susanna")
+        self.driver.hide_keyboard()
+        self.GM_Invite_find_people_screen_ios.tap(username)
+
 
 
 

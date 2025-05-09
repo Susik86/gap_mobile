@@ -35,7 +35,7 @@ def appium_server():
     else:
         yield
 
-# ✅ Appium driver per test
+# ✅ Appium driver per test (single-device)
 @pytest.fixture(scope="function")
 def driver(request, platform):
     logger.info(f"🚗 Initializing driver for platform: {platform}")
@@ -54,6 +54,25 @@ def driver(request, platform):
             driver.quit()
         else:
             logger.warning("⚠️ No driver instance found.")
+
+# ✅ Multi-device driver fixture (iOS + Android)
+@pytest.fixture(scope="function")
+def multidevice_drivers():
+    """
+    Initializes two drivers:
+    - iOS for User A (simulator)
+    - Android for User B (emulator or real device)
+    """
+    logger.info("🚗 Starting multi-device drivers (User A - iOS, User B - Android)")
+
+    driver_ios = get_driver("ios", instance_name="user_a")
+    driver_android = get_driver("android", instance_name="user_b")
+
+    yield driver_ios, driver_android
+
+    logger.info("🛑 Quitting both drivers after multi-device test")
+    driver_ios.quit()
+    driver_android.quit()
 
 # ✅ Auto-attach screenshot on test failure
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)

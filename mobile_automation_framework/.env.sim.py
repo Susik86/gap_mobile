@@ -16,6 +16,10 @@ APPLE_TEAM_ID=PNYR9CWG98
 # -----------------------------
 # ✅ Android Emulator
 # -----------------------------
+
+# -----------------------------
 ANDROID_APP_PATH=/Users/susannakarapetyan/gap_mobile/mobile_automation_framework/apps/android_qa.apk
 ANDROID_DEVICE=emulator-5554
 ANDROID_VERSION=10.0
+ANDROID_SYSTEM_PORT=8201
+

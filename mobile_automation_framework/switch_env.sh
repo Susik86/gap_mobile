@@ -1,15 +1,19 @@
 #!/bin/bash
 
-ENV_FILE=".env"
+# Usage: ./switch_env.sh bstack or ./switch_env.sh sim
+TARGET_ENV=$1
 
-if [[ $1 == "sim" ]]; then
-  cp .env.sim $ENV_FILE
-  echo "✅ Switched to SIMULATOR environment (.env.sim → .env)"
-elif [[ $1 == "bstack" ]]; then
-  cp .env.bstack $ENV_FILE
-  echo "✅ Switched to BROWSERSTACK environment (.env.bstack → .env)"
-else
-  echo "❌ Invalid option."
-  echo "Usage: ./switch_env.sh [sim|bstack]"
+if [ -z "$TARGET_ENV" ]; then
+  echo "❌ Missing environment name. Usage: ./switch_env.sh [bstack|sim|qa|dev]"
   exit 1
 fi
+
+ENV_FILE="utils/.env.$TARGET_ENV"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "❌ Environment file not found: $ENV_FILE"
+  exit 1
+fi
+
+cp "$ENV_FILE" utils/.env
+echo "✅ Switched environment to: $TARGET_ENV"

@@ -1,10 +1,12 @@
 import logging
 import time
+from telnetlib import EC
 
 from data.locators.Genius_Meter_locators import GM_create_team_locators
 from data.locators.Genius_Meter_locators.GM_create_team_locators import GMCreateTeamLocators
 from data.static.GM_data import GM_data
 from data.static.strings.en import StringsEn
+from selenium.webdriver.support import expected_conditions as EC
 
 from pages.base_page import BasePage
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
@@ -15,7 +17,7 @@ class GMCreateTeamPage(BasePage):
         self.logger = logging.getLogger("mobile_framework_logger")  # ✅ Use centralized logger
 
         self.platform = platform  # ✅ Store platform
-        self.locators = GMCreateTeamLocators.get_locators("GM_CREATE_TEAM_PAGE", platform)  # ✅ Ensure platform is passed
+        self.locators = GMCreateTeamLocators.get_locators("GM_PAGE", platform)  # ✅ Ensure platform is passed
 
         if not self.locators:
             self.logger.error(f"❌ No locators found for platform: {platform}")
@@ -94,23 +96,37 @@ class GMCreateTeamPage(BasePage):
 
 
     def fill_create_GM_team_fields(self, test_data):
-        self.logger.info("📝 Filling out GM team creation fields...")
+        """
+        Fills the GM team creation form with data from test_data dict.
+        Expected keys: 'team_name_field', 'project_name_field', 'outcome_field'
+        """
+        self.logger.info("📝 Filling out GM team creation fields with:")
+        self.logger.info(f"   • Team Name: {test_data['team_name_field']}")
+        self.logger.info(f"   • Project Name: {test_data['project_name_field']}")
+        self.logger.info(f"   • Outcome: {test_data['outcome_field']}")
 
+        # ✅ Get locators
         team_field = self.locators.get("team_name_field")
+        team_field_clicked = self.locators.get("team_name_field_clicked")
         project_field = self.locators.get("project_name_field")
-        outcome_field = self.locators.get("outcome_field")  # ✅ Fixed key name
+        project_field_clicked = self.locators.get("project_name_field_clicked")
+        outcome_field = self.locators.get("outcome_field")
+        outcome_field_clicked = self.locators.get("outcome_field_clicked")
 
-        self.logger.info(f"🔹 Entering team name: {test_data['team_name_field']}")
-        self.send_keys(team_field, test_data["team_name_field"])
+        # ✅ Fill Team Name
+        self.logger.info("🔹 Focusing and typing into Team Name field...")
+        self.click(team_field)
+        self.send_keys( team_field_clicked, test_data["team_name_field"])
 
-        self.logger.info(f"🔹 Entering project name: {test_data['project_name_field']}")
-        self.send_keys(project_field, test_data["project_name_field"])
+        # ✅ Fill Project Name
+        self.logger.info("🔹 Focusing and typing into Project Name field...")
+        self.click(project_field)
+        self.send_keys(project_field_clicked, test_data["project_name_field"])
 
-        time.sleep(3)  # Optional: wait if the field loads after delay
-
-        self.logger.info(f"🔹 Entering outcome name: {test_data['outcome_field']}")
-        self.send_keys(outcome_field, test_data["outcome_field"])
-
+        # ✅ Fill Outcome
+        self.logger.info("🔹 Focusing and typing into Outcome field...")
+        self.click(outcome_field)
+        self.send_keys(outcome_field_clicked, test_data["outcome_field"])
         self.logger.info("✅ GM team form filled successfully.")
 
 
@@ -140,5 +156,24 @@ class GMCreateTeamPage(BasePage):
         self.logger.info("✅ All GM form fields are filled and verified correctly.")
 
 
-    def click_on_submit_btn(self):
-        self.click(self.locators.get("submit_btn"))
+    def click_on_submit_btn(self, timeout=10):
+        """Clicks the Submit button on the Create Team screen with waits and logs."""
+        submit_btn_locator = self.locators.get("submit_btn")
+
+        if not submit_btn_locator:
+            self.logger.error("❌ 'submit_btn' locator is missing.")
+            raise ValueError("❌ 'submit_btn' locator is missing.")
+
+        try:
+            self.logger.info("⏳ Waiting for 'Submit' button to be visible...")
+            element = self.wait.until(EC.visibility_of_element_located(submit_btn_locator))
+            self.logger.info("✅ 'Submit' button is visible. Clicking now...")
+            element.click()
+            self.logger.info("✅ 'Submit' button clicked successfully.")
+
+        except (TimeoutException, NoSuchElementException) as e:
+            self.logger.error(f"❌ Failed to click Submit button: {e}")
+            screenshot_path = "logs/submit_click_failed.png"
+            self.driver.save_screenshot(screenshot_path)
+            self.logger.info(f"📸 Screenshot saved: {screenshot_path}")
+            raise
