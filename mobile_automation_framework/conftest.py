@@ -1,10 +1,11 @@
-import pytest
-import logging
 import os
-import allure
 import time
+import logging
+import pytest
+import allure
 from utils.driver_manager import get_driver
 from utils.appium_server import start_appium_server, stop_appium_server
+from utils.allure_steps import attach_screenshot
 
 logger = logging.getLogger("mobile_framework_logger")
 
@@ -23,7 +24,7 @@ def platform(request):
     logger.info(f"🔍 Selected platform: {platform}")
     return platform
 
-# ✅ Start/stop local Appium server only if needed
+# ✅ Start/stop local Appium server (only if needed)
 @pytest.fixture(scope="session", autouse=True)
 def appium_server():
     if os.getenv("APPIUM_SERVER_URL", "").startswith("http://127.0.0.1"):
@@ -35,7 +36,7 @@ def appium_server():
     else:
         yield
 
-# ✅ Appium driver per test (single-device)
+# ✅ Appium driver fixture (single-device)
 @pytest.fixture(scope="function")
 def driver(request, platform):
     logger.info(f"🚗 Initializing driver for platform: {platform}")
@@ -58,40 +59,39 @@ def driver(request, platform):
 # ✅ Multi-device driver fixture (iOS + Android)
 @pytest.fixture(scope="function")
 def multidevice_drivers():
-    """
-    Initializes two drivers:
-    - iOS for User A (simulator)
-    - Android for User B (emulator or real device)
-    """
     logger.info("🚗 Starting multi-device drivers (User A - iOS, User B - Android)")
-
     driver_ios = get_driver("ios", instance_name="user_a")
     driver_android = get_driver("android", instance_name="user_b")
-
     yield driver_ios, driver_android
-
     logger.info("🛑 Quitting both drivers after multi-device test")
     driver_ios.quit()
     driver_android.quit()
 
-# ✅ Auto-attach screenshot on test failure
+# ✅ Automatically attach screenshot on test failure (for class-based tests)
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     result = outcome.get_result()
 
     if result.when == "call" and result.failed:
-        driver = getattr(item._request.cls, "driver", None)
-        if driver:
-            screenshot_dir = os.path.join(os.getcwd(), "results", "screenshots")
-            os.makedirs(screenshot_dir, exist_ok=True)
-            file_name = f"{item.name}_{int(time.time())}.png"
-            file_path = os.path.join(screenshot_dir, file_name)
-            driver.save_screenshot(file_path)
-            allure.attach.file(file_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
+        driver = None
 
-# ✅ Auto title/description for Allure
+        # Try getting driver from class (e.g., self.driver_android / self.driver_ios)
+        if hasattr(item, "instance"):
+            driver = getattr(item.instance, "driver_android", None) or getattr(item.instance, "driver_ios", None)
+
+        # If function-style test (rare in your case), fallback
+        if not driver:
+            driver = item.funcargs.get("driver")
+
+        if driver:
+            attach_screenshot(driver, name="Auto_Failure_Screenshot", folder="failures")
+        else:
+            allure.attach("❌ No driver found for screenshot", name="Screenshot Skipped", attachment_type=allure.attachment_type.TEXT)
+
+# ✅ Auto-title and description in Allure reports
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_setup(item):
-    allure.dynamic.title(item.name)
-    allure.dynamic.description(f"Test function: {item.name}")
+    title = item.name if hasattr(item, "name") else item.nodeid
+    allure.dynamic.title(title)
+    allure.dynamic.description(f"Test function: {title}")
