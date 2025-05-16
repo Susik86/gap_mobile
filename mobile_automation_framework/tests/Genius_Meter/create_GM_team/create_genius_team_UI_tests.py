@@ -45,6 +45,9 @@ class TestGMCreateTeamUITests:
         self.dashboard_page.assert_dashboard_tab_is_visible()
         self.logger.info("✅ Login test completed successfully!")
 
+
+
+
     @pytest.mark.run
     def test_all_elements_have_appropriate_texts(self):
         self.dashboard_page.click_gm_tab()
