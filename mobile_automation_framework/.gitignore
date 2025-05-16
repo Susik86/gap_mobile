@@ -4,4 +4,5 @@ __pycache__/
 reports/
 .idea/
 allure-report/
-allure_results/
+allure-results/
+results/
