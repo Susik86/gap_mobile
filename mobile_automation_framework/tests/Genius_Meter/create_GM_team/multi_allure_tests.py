@@ -65,6 +65,10 @@ class TestCreateGMTeamSuccessfully:
         self.dashboard_page_ios.click_gm_tab()
         time.sleep(2)
 
+
+
+
+
         self.dashboard_page_ios.click_by_visible_text("Launch Genius Pulse")
         time.sleep(2)
         self.dashboard_page_ios.click_alert_ok()
