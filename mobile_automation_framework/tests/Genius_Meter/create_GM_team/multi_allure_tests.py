@@ -93,4 +93,8 @@ class TestCreateGMTeamSuccessfully:
         # Optional: Attach screenshots manually for success verification
         attach_screenshot(self.driver_ios, name="iOS_Success", folder="gm_team")
         attach_screenshot(self.driver_android, name="Android_Success", folder="gm_team")
+
+
+
+
         attach_log("Test Execution Log", "logs/test_execution.log")
