@@ -1,10 +1,13 @@
+
 {
-    "ANDROID_DEVICE": "Galaxy A22",
+    "ANDROID_DEVICE": "Samsung Galaxy S22",
     "ANDROID_VERSION": "12",
-    "ANDROID_APP_PATH": "apps/android_qa.apk",
-    "ANDROID_UDID":"RZ8R71C78VW",
+    "ANDROID_UDID": "RZ8R71C78VW",
+    "ANDROID_APP_PATH": "/Users/susannakarapetyan/gap_mobile/mobile_automation_framework/apps/android_qa.apk",
     "IOS_DEVICE": "iPhone 14 Pro",
-    "IOS_VERSION": "16.4",
-    "IOS_APP_PATH": "apps/Genius-QA.app"
+    "IOS_VERSION": "16",
+    "IOS_APP_PATH": "/Users/susannakarapetyan/gap_mobile/mobile_automation_framework/apps/Genius-QA.app",
+    "APPIUM_SERVER_URL": "http://127.0.0.1:4723/wd/hub"
 }
+
 

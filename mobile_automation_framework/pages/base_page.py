@@ -2,6 +2,7 @@ import os
 import allure
 import logging
 
+from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,6 +10,9 @@ import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
+from selenium.webdriver.common.actions.interaction import KEY
+from selenium.webdriver.common.actions.pointer_input import PointerInput
+
 
 
 class BasePage:
@@ -17,15 +21,68 @@ class BasePage:
         self.wait = WebDriverWait(driver, timeout)  # ✅ Default timeout
         self.logger = logging.getLogger("mobile_framework_logger")  # ✅ Use centralized logger
 
-    def click(self, locator):
-        """Wait for an element and click."""
+    # def click(self, locator):
+    #     """Wait for an element and click."""
+    #     try:
+    #         element = self.wait.until(EC.element_to_be_clickable(locator))
+    #         element.click()
+    #         self.logger.info(f"✅ Clicked on {locator}")
+    #     except (TimeoutException, NoSuchElementException) as e:
+    #         self.logger.error(f"❌ Failed to click element {locator}: {e}")
+    #         raise
+
+    def click(self, locator, timeout=10):
+        """Wait until an element is clickable and click it."""
         try:
-            element = self.wait.until(EC.element_to_be_clickable(locator))
+            self.logger.info(f"⏳ Waiting for element to be visible: {locator}")
+            element = WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
             element.click()
             self.logger.info(f"✅ Clicked on {locator}")
         except (TimeoutException, NoSuchElementException) as e:
             self.logger.error(f"❌ Failed to click element {locator}: {e}")
+            screenshot_path = f"logs/click_failed_{str(locator)}.png"
+            self.driver.save_screenshot(screenshot_path)
+            self.logger.info(f"📸 Screenshot saved to: {screenshot_path}")
             raise
+
+    def tap(self, locator, timeout=10):
+        """
+        Performs a tap gesture on a mobile element using W3C PointerInput.
+        """
+        self.logger.info(f"👆 Tapping element: {locator}")
+
+        element = WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
+
+        finger = PointerInput("touch", "finger")
+        actions = ActionBuilder(self.driver, mouse=finger)
+        actions.pointer_action.move_to(element)
+        actions.pointer_action.pointer_down()
+        actions.pointer_action.pointer_up()
+        actions.perform()
+
+        self.logger.info(f"✅ Tap completed on: {locator}")
+
+
+    def focus_field(self, locator, timeout=10):
+        """
+        Focuses an input field by tapping on it. Use for text fields that require keyboard activation.
+        """
+        try:
+            self.logger.info(f"⏳ Focusing field: {locator}")
+            WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
+            self.tap(locator)
+            self.logger.info(f"✅ Field focused via tap: {locator}")
+        except (TimeoutException, NoSuchElementException) as e:
+            self.logger.error(f"❌ Failed to focus field {locator}: {e}")
+            raise
+
+    def hide_keyboard(self):
+        """Attempts to hide the on-screen keyboard."""
+        try:
+            self.driver.hide_keyboard()
+            self.logger.info("📉 Keyboard hidden successfully.")
+        except Exception as e:
+            self.logger.warning(f"⚠️ Could not hide keyboard: {e}")
 
     def send_keys(self, locator, text):
         """Wait for an element and send keys."""
@@ -163,61 +220,68 @@ class BasePage:
             raise AssertionError(f"❌ Assertion failed: Expected '{expected_text}' but element was missing or text did not match.")
 
 
-    def scroll_to_bottom(self, platform, button_locator=None, max_scrolls=15):
+    def scroll_until_visible(self, locator_name, platform, locator_map, max_scrolls=5):
         try:
-            scroll_count = 0  # Counter to track number of scrolls
+            if locator_name not in locator_map:
+                raise ValueError(f"❌ Locator '{locator_name}' not found in locator map.")
 
+            locator = locator_map[locator_name]
+
+            # Step 1: Check if the element is already visible
+            try:
+                element = WebDriverWait(self.driver, 2).until(
+                    EC.visibility_of_element_located(locator)
+                )
+                if element.is_displayed():
+                    self.logger.info(f"✅ Element '{locator_name}' is already visible. No scrolling needed.")
+                    return element
+            except TimeoutException:
+                self.logger.info(f"🔍 Element '{locator_name}' not initially visible. Starting scroll...")
+
+            # Step 2: Start scrolling until it's visible or max_scrolls reached
+            scroll_count = 0
             while scroll_count < max_scrolls:
-                if button_locator:
-                    try:
-                        button = WebDriverWait(self.driver, 2).until(
-                            EC.visibility_of_element_located(button_locator)
-                        )
-                        if button.is_displayed():
-                            self.logger.info(f"✅ Button '{button_locator}' is now visible. Stopping scroll.")
-                            # button.click()  # Ensure the button is clicked once found
-                            break  # ✅ Stop scrolling when the button is found
-                    except TimeoutException:
-                        self.logger.info(f"🔄 '{button_locator}' not found yet, scrolling down...")
-
-                # Perform scrolling based on platform
+                # Perform platform-specific scroll
                 if platform.lower() == "ios":
-                    self.logger.info("🔹 Scrolling down on iOS...")
+                    self.logger.info("📱 iOS: Scrolling up")
                     self.driver.execute_script("mobile: swipe", {"direction": "up"})
-
                 elif platform.lower() == "android":
-                    self.logger.info("🔹 Scrolling down on Android...")
-
-                    # Try swiping first
+                    self.logger.info("🤖 Android: Scrolling up")
                     try:
                         self.driver.execute_script("mobile: swipe", {"direction": "up"})
                     except Exception:
-                        self.logger.info("⚠️ Swipe failed, trying scrollGesture...")
-
-                        # If swipe fails, fall back to scrollGesture with increased percent
+                        self.logger.info("⚠️ Swipe failed, falling back to scrollGesture")
                         try:
                             self.driver.execute_script("mobile: scrollGesture", {
                                 "left": 100, "top": 100, "width": 800, "height": 1600,
-                                "direction": "down",
-                                "percent": 80  # Increased percent for better visibility
+                                "direction": "down",  # Down == scrolls up visually
+                                "percent": 80
                             })
                         except Exception as e:
-                            self.logger.error(f"❌ Scrolling failed: {e}")
-
+                            self.logger.error(f"❌ scrollGesture failed: {e}")
                 else:
                     raise ValueError(f"❌ Unsupported platform: {platform}")
 
-                time.sleep(1)  # Small delay to allow UI updates
-                scroll_count += 1  # Increment scroll count
+                # Small delay for UI update
+                time.sleep(1)
+                scroll_count += 1
 
-            if scroll_count >= max_scrolls:
-                self.logger.warning(f"⚠️ Max scroll attempts ({max_scrolls}) reached. Button might not be present.")
-                print(self.driver.page_source)  # Dump page source for debugging
+                # Re-check visibility after each scroll
+                try:
+                    element = WebDriverWait(self.driver, 2).until(
+                        EC.visibility_of_element_located(locator)
+                    )
+                    if element.is_displayed():
+                        self.logger.info(f"✅ Found element '{locator_name}' after {scroll_count} scroll(s).")
+                        return element
+                except TimeoutException:
+                    self.logger.info(f"🔄 Still not visible after {scroll_count} scroll(s)...")
 
-            self.logger.info("✅ Scroll completed!")
+            self.logger.warning(f"⚠️ Max scrolls reached. Element '{locator_name}' not found.")
+            return None
 
         except Exception as e:
-            self.logger.error(f"❌ Failed to scroll: {str(e)}")
+            self.logger.error(f"❌ Exception in scroll_until_visible: {e}")
             raise
 
 
@@ -278,6 +342,60 @@ class BasePage:
             raise AssertionError(f"❌ Element {locator} is not visible!")
 
 
+    def get_element_value(self, locator):
+        element = self.driver.find_element(*locator)
+        return element.text or element.get_attribute("value")
 
 
 
+    def click_by_visible_text(self, visible_text: str, timeout: int = 10):
+        """
+        Clicks an element by its visible text without needing predefined locator.
+        Supports both Android and iOS platforms.
+        """
+        self.logger.info(f"🔍 Attempting to click element with text: '{visible_text}'")
+
+        platform = self.driver.capabilities.get("platformName", "").lower()
+
+        if platform == "android":
+            locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{visible_text}")')
+        elif platform == "ios":
+            locator = (AppiumBy.IOS_PREDICATE, f'label == "{visible_text}" OR name == "{visible_text}"')
+        else:
+            raise ValueError(f"❌ Unsupported platform: {platform}")
+
+        try:
+            element = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable(locator)
+            )
+            element.click()
+            self.logger.info(f"✅ Clicked on element with text: '{visible_text}'")
+        except (TimeoutException, NoSuchElementException) as e:
+            self.logger.error(f"❌ Failed to click element with text '{visible_text}': {e}")
+            raise
+
+
+    def click_alert_ok(self, timeout=10):
+        """
+        Clicks the 'OK' button on a system or app alert.
+        Works for both iOS and Android native alerts.
+        """
+        self.logger.info("🔍 Looking for 'OK' button in alert...")
+
+        platform = self.driver.capabilities.get("platformName", "").lower()
+
+        if platform == "ios":
+            ok_locator = (AppiumBy.IOS_PREDICATE, 'label == "OK" AND type == "XCUIElementTypeButton"')
+        elif platform == "android":
+            ok_locator = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("OK")')
+        else:
+            raise ValueError(f"❌ Unsupported platform: {platform}")
+
+        try:
+            element = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable(ok_locator)
+            )
+            element.click()
+            self.logger.info("✅ 'OK' button clicked.")
+        except TimeoutException:
+            self.logger.warning("⚠️ 'OK' button not found — alert may not have appeared.")

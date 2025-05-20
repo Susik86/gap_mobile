@@ -3,14 +3,14 @@ from appium.webdriver.common.appiumby import AppiumBy
 class GMCreateTeamLocators:
     ANDROID = {
         "GM_PAGE": {
-            "screen_title":(AppiumBy.ID, "com.gapinternational.genius.qa:id/title"),
-            "back_button":(AppiumBy.ID, ""),
+            "screen_title":(AppiumBy.XPATH, "//*[@text='Create a Team']"),
+            "back_button":(AppiumBy.XPATH, "//android.widget.ImageView[@resource-id='com.gapinternational.genius.qa:id/startActionImage']"),
             "legend_icon": (AppiumBy.ID, "com.gapinternational.genius.qa:id/secondEndActionImageView"),
-            "team_name_field": (AppiumBy.ID, ""),
-            "project_name_field": (AppiumBy.ID, ""),
-            "outcome_field": (AppiumBy.ID, ""),
-            "submit_btn": (AppiumBy.ID, ""),
-            "cancel_btn": (AppiumBy.ID, ""),
+            "team_name_field": (AppiumBy.ID, "com.gapinternational.genius.qa:id/groupNameEditText"),
+            "project_name_field": (AppiumBy.ID, "com.gapinternational.genius.qa:id/projectNameEditText"),
+            "outcome_field": (AppiumBy.ID, "com.gapinternational.genius.qa:id/outcomeEditText"),
+            "submit_btn": (AppiumBy.ID, "com.gapinternational.genius.qa:id/submitButton"),
+            "cancel_btn": (AppiumBy.ID, "com.gapinternational.genius.qa:id/cancelButton"),
         }
     }
 
@@ -18,12 +18,16 @@ class GMCreateTeamLocators:
         "GM_PAGE": {
             "screen_title":(AppiumBy.IOS_PREDICATE, 'label == "Create a Team"'),
             "back_button":(AppiumBy.ACCESSIBILITY_ID, "Genius Meter"),
-            "legend_icon":(AppiumBy.IOS_PREDICATE, '"label == "?" AND name == "?" AND value == "?"'),
+            # "legend_icon":(AppiumBy.IOS_PREDICATE, '"label == "?" AND name == "?" AND value == "?"'),
             "team_name_field": (AppiumBy.ACCESSIBILITY_ID, "Enter team name…"),
+            "team_name_field_clicked": (AppiumBy.ACCESSIBILITY_ID, "Team Name"),
             "project_name_field": (AppiumBy.ACCESSIBILITY_ID, "Enter project name…"),
-            "outcome_field": (AppiumBy.ACCESSIBILITY_ID, "Enter outcome…"),
+            "project_name_field_clicked": (AppiumBy.ACCESSIBILITY_ID, "Project Name"),
+            "outcome_field": (AppiumBy.ACCESSIBILITY_ID, 'Enter outcome…'),
+            "outcome_field_clicked": (AppiumBy.ACCESSIBILITY_ID, 'Outcome'),
             "submit_btn": (AppiumBy.XPATH, '//XCUIElementTypeButton[@name="Submit"]'),
             "cancel_btn": (AppiumBy.XPATH, '//XCUIElementTypeButton[@name="Cancel"]')
+
         }
     }
 

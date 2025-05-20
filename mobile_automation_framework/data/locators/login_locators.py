@@ -3,18 +3,18 @@ from appium.webdriver.common.appiumby import AppiumBy
 class LoginLocators:
     ANDROID = {
         "LOGIN_PAGE": {
-            "title":(AppiumBy.ID, ''),
-            "sub_title":(AppiumBy.ID, ''),
+            "title":(AppiumBy.ID, 'com.gapinternational.genius.qa:id/titleTextView'),
+            "sub_title":(AppiumBy.ID, 'com.gapinternational.genius.qa:id/subTitleTextView'),
             "email_field":(AppiumBy.ID, "com.gapinternational.genius.qa:id/emailEditText"),
             "password_field":(AppiumBy.ID, "com.gapinternational.genius.qa:id/passwordEditText"),
-            "show_btn":(AppiumBy.ID, ''),
-            "reset_your_password_btn":(AppiumBy.ID, ''),
+            "show_btn":(AppiumBy.ID, 'com.gapinternational.genius.qa:id/text_input_end_icon'),
+            "reset_your_password_btn":(AppiumBy.ID, 'com.gapinternational.genius.qa:id/resetPasswordTextView'),
             "login_button":(AppiumBy.ID, "com.gapinternational.genius.qa:id/signInButton"),
             "login_pop_up":(AppiumBy.ID, "android:id/message"),
             "ok_btn":(AppiumBy.ID, "com.gapinternational.genius.qa:id/button1"),
-            "email_error":(AppiumBy.ID, "com.gapinternational.genius.qa:id/textinput_helper_text"),
-            "password_error":(AppiumBy.ID, ""),
-            "bottom_txt":(AppiumBy.NAME, "Don’t have an account? Learn more about Genius"),
+            "email_error":(AppiumBy.XPATH, "//*[@text='Please enter your company email.']"),
+            "password_error":(AppiumBy.XPATH, "//*[@text='Please enter your password']"),
+            "bottom_txt":(AppiumBy.ID, "com.gapinternational.genius.qa:id/learnMoreTextView"),
         }
     }
 

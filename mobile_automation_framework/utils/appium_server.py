@@ -10,12 +10,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 appium_service = AppiumService()
 
 # Possible Appium URLs
-APPIUM_URLS = [
-    "http://127.0.0.1:4723/wd/hub/status"
-]
+APPIUM_URLS = ["http://127.0.0.1:4723/wd/hub/status"]
 
 def is_appium_running():
-    """Check if Appium server is already running on any available URL."""
+    """Check if Appium server is already running."""
     for url in APPIUM_URLS:
         try:
             response = requests.get(url, timeout=5)
@@ -30,19 +28,20 @@ def start_appium_server():
     """Start the Appium server using AppiumService."""
     if is_appium_running():
         logging.info("✅ Appium is already running.")
-        return  # Don't start it again if already running
+        return
 
     logging.info("🚀 Starting Appium server...")
     appium_service.start(args=["--port", "4723", "--base-path", "/wd/hub"])
 
-    # Wait and check if it's actually running
-    for _ in range(10):
+    # Wait up to 20 seconds for Appium to start
+    max_retries = 20
+    for i in range(max_retries):
         if is_appium_running():
-            logging.info("✅ Appium server started successfully.")
+            logging.info(f"✅ Appium server started successfully after {i+1} seconds.")
             return
         time.sleep(1)
 
-    logging.error("❌ Failed to start Appium server!")
+    logging.error("❌ Appium server failed to start within the timeout period!")
     raise RuntimeError("Appium server did not start successfully.")
 
 def stop_appium_server():

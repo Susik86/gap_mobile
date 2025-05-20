@@ -3,7 +3,7 @@ import pytest
 from other.logger import logger
 from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
-from pages.gm_page import GMPage
+from pages.Genius_Meter.GM_page import GMPage
 from data.static.users import Users
 from data.static.strings.en import StringsEn
 

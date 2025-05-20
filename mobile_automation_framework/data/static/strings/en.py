@@ -26,9 +26,17 @@ class StringsEn:
         title = ''
         subtitle = ''
 
+    class GMCreateTeamPage:
+        title = 'Create a Team'
+        team_name = 'Enter team name…'
+        project_name = 'Enter project name…'
+        outcome_name = 'Enter outcome…'
+
+
 
     class General:
-        login_button = 'Sign In'
+        submit_btn = 'Submit'
+        cancel_btn = 'Cancel'
 
 
     class Errors:

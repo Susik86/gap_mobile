@@ -17,7 +17,10 @@ class GMLocators:
     IOS = {
         "GM_PAGE": {
             "screen_title":(AppiumBy.IOS_PREDICATE, 'label == "Genius Meter"'),
-            "create_team_btn":(AppiumBy.XPATH, '//XCUIElementTypeStaticText[@name="Create a Team"]'),
+            "legend_icon": (AppiumBy.IOS_CLASS_CHAIN, '**/XCUIElementTypeButton[`label == "?"`]'),
+            "create_team_btn":(AppiumBy.IOS_PREDICATE, 'label == "Create a Team" AND name == "Create a Team" AND type == "XCUIElementTypeButton"'),
+            "join_team_btn": (AppiumBy.IOS_CLASS_CHAIN, '**/XCUIElementTypeButton[`label == "Join a Team"`]'),
+
 
         }
     }
